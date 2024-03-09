@@ -1,13 +1,10 @@
-# Setup a SSH client configuration file to connect to a server with RSA key.
-
-file_line { 'Turn off passwd auth':
-  path    => '/etc/ssh/ssh_config',
-  line    => '    PasswordAuthentication no',
-  replace => true
+#Configured ssh client use private key and refuse to authenticate a password
+file_line {'change private key':
+  path => '/etc/ssh/ssh_config',
+  line => '    IdentityFile ~/.ssh/school',
 }
 
-file_line { 'Declare identity file':
-  path    => '/etc/ssh/ssh_config',
-  line    => '    IdentityFile ~/.ssh/holberton',
-  replace => true
+file_line {'change to refuse to authenticate using passowrd':
+  path => '/etc/ssh/ssh_config',
+  line => '    PasswordAuthentication no',
 }
