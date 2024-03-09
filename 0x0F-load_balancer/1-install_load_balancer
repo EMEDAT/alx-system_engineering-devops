@@ -1,18 +1,13 @@
 #!/usr/bin/env bash
-# Install HAProxy and configuring
+# Configures a server with HAProxy
 
-sudo apt -y update
-sudo apt -y upgrade
+apt update -y && apt upgrade -y
+apt install haproxy=1.6.\* -y
 
-sudo apt-get install -y --no-install-recommends software-properties-common
-sudo apt-get install -y haproxy
+echo "ENABLED=1" >>/etc/default/haproxy
 
-server_web01="4274-web-01 52.73.82.123:80"
-server_web02="4274-web-02 54.165.211.232:80"
-front_end="\nfrontend myfrontend\n\tbind 0.0.0.0:80\n\tmode http\n\tdefault_backend myservers\n"
+haproxy_cfg="\nbackend web-backend\n\tbalance roundrobin\n\tserver 2500-web-01 35.229.40.200:80 check\n\tserver 2500-web-02 35.229.23.118:80 check\n\nfrontend http\n\tbind *:80\n\tmode http\n\tdefault_backend web-backend"
 
-back_end="\nbackend myservers\n\tbalance roundrobin\n\tserver ${server_web01} check\n\tserver ${server_web02} check\n"
+echo -e "$haproxy_cfg" >>/etc/haproxy/haproxy.cfg
 
-printf "${front_end}" | sudo tee -a /etc/haproxy/haproxy.cfg
-printf "${back_end}" | sudo tee -a /etc/haproxy/haproxy.cfg
-sudo service haproxy restart
+service haproxy restart
