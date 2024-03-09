@@ -1,20 +1,29 @@
-# Install and configure an Nginx server
+# Script that setup a nginx web server on our server + redirection.
+
 package { 'nginx':
-  ensure => installed,
+  ensure   => present,
+  provider => 'apt'
 }
 
-file_line { 'line':
+# Index page
+file { '/var/www/html/index.html':
+  ensure  => present,
+  path    => '/var/www/html/index.html',
+  content => 'Holberton School'
+}
+
+# Redirect to fabulous Rick Astley page
+file_line { 'Rick Astley showtime':
   ensure => 'present',
   path   => '/etc/nginx/sites-available/default',
-  after  => 'server_name _',
-  line   => 'rewrite ^/redirect_me https://www.youtube.com/watch?v=hdZUCjAQaGw permanent;',
-}
-
-file { '/var/www/html/index.html':
-  content => 'Hello World',
+  after  => 'listen 80 default_server;',
+  line   => '        rewrite ^/redirect_me https://www.youtube.com/watch?v=dQw4w9WgXcQ permanent;'
 }
 
 service { 'nginx':
-  ensure  => running,
-  require => Package['nginx'],
+  ensure     => running,
+  enable     => true,
+  hasrestart => true,
+  require    => Package['nginx'],
+  subscribe  => File_line['Rick Astley showtime']
 }
