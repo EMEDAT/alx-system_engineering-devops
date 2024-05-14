@@ -1,26 +1,17 @@
 #!/usr/bin/python3
-'''
-This script make petitions to the Reddit API
-'''
-import requests
+"""Module for task 0"""
 
 
 def number_of_subscribers(subreddit):
-    '''
-    Function that queries the Reddit API and returns the number
-    of subscribers for a given subreddit
-    '''
+    """Queries the Reddit API and returns the number of subscribers
+    to the subreddit"""
+    import requests
 
-    if subreddit is None or type(subreddit) is not str:
+    sub_info = requests.get("https://www.reddit.com/r/{}/about.json"
+                            .format(subreddit),
+                            headers={"User-Agent": "My-User-Agent"},
+                            allow_redirects=False)
+    if sub_info.status_code >= 300:
         return 0
 
-    url = 'https://www.reddit.com/r/{}/about.json'.format(subreddit)
-
-    header = {
-        'User-Agent': 'MyAgentLE',
-    }
-
-    response = requests.get(url, headers=header, allow_redirects=False)
-    if response.status_code != 200:
-        return 0
-    return response.json().get('data', {}).get('subscribers', 0)
+    return sub_info.json().get("data").get("subscribers")
