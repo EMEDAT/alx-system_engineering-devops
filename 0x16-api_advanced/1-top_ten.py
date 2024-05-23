@@ -1,32 +1,24 @@
 #!/usr/bin/python3
-'''
-This script make petitions to the Reddit API
-'''
+"""
+Script that queries the Reddit API
+Returns: The titles of the first 10 hot posts listed for a given subreddit.
+"""
 import requests
 
 
 def top_ten(subreddit):
-    '''
-    Function that queries the Reddit API and prints the titles of
-    the first 10 hot posts listed for a given subreddit.
-    '''
-
+    """returns the first 10 hot posts for the subreddit"""
     if subreddit is None or type(subreddit) is not str:
-        print('None')
-        return
-
-    url = 'https://www.reddit.com/r/{}/hot.json?limit=10'.format(subreddit)
-
-    header = {
-        'User-Agent': 'MyAgentLE',
+        return 0
+    headers = {
+        'User-Agent': '0x16-api_advanced:project:v1.0.0 (by /u/tami-cp0)'
     }
+    url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=10"
 
-    response = requests.get(url, headers=header, allow_redirects=False)
-    if response.status_code != 200:
-        print('None')
-        return
-
-    top = response.json().get('data').get('children')
-
-    for element in top:
-        print(element.get('data').get('title'))
+    try:
+        response = requests.get(url, headers=headers,
+                                allow_redirects=False).json()
+        [print(result['data']['title'])
+            for result in response['data']['children']]
+    except Exception as e:
+        print(f"Error: {e}")
